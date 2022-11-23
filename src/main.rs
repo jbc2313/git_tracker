@@ -1,9 +1,23 @@
+use std::cmp::Ordering;
+use std::env;
+use std::fmt;
+use std::fs;
+use std::io;
+use std::path::PathBuf;
+
 use cursive::Cursive;
 use cursive::views::Dialog;
-
+use cursive_tree_view::{Placement, TreeView};
 
 
 fn main() {
+
+    #[derive(Debug)]
+    struct TreeEntry {
+        name: String,
+        dir: Option<PathBuf>,
+    }
+
     let mut prg = cursive::default();
 
     prg.add_layer(Dialog::text("Git Tracker")

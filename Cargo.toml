@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 cursive = "*"
+cursive_tree_view = "0.8"
