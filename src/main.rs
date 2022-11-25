@@ -11,6 +11,8 @@ use cursive::view::Scrollable;
 use cursive::views::Dialog;
 use cursive_tree_view::{Placement, TreeView};
 
+// walkdir = "2" is a potential crate to traverse directories
+
 #[derive(Debug)]
 struct TreeEntry {
     name: String,
@@ -29,9 +31,12 @@ fn main() {
 
 
     let mut prg = cursive::default();
+    
+    let dir: PathBuf = get_current_dir();
+
 
     prg.add_layer(Dialog::text("Git Tracker")
-        .title("Tracker Git")
+        .title(dir.as_path().display().to_string())
         .button("Next", sec_view));
 
     prg.run();
@@ -143,4 +148,9 @@ fn expand_tree(tree: &mut TreeView<TreeEntry>, parent_row: usize, dir: &PathBuf)
                 tree.insert_item(i, Placement::LastChild, parent_row);
             }
         }
+}
+
+//add function here to read fs path and outpath cur path
+fn get_current_dir() -> PathBuf {
+    env::current_dir().unwrap()
 }
