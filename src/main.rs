@@ -94,7 +94,8 @@ fn quit_view(s: &mut Cursive, msg: &str) {
     s.pop_layer();
     s.add_layer(Dialog::text(msg)
         .title("Quit")
-        .button("Yes", |s| s.quit()));
+        .button("Yes", |s| s.quit())
+        .button("No", track_view));
 }
 
 fn collect_entries(dir: &PathBuf, entries: &mut Vec<TreeEntry>) -> io::Result<()> {
