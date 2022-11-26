@@ -4,7 +4,14 @@ use std::fmt;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
+//table view imports
+use rand::Rng;
+use cursive::views::TextView;
+use cursive::traits::*;
 
+
+
+//end table view imports
 use cursive::Cursive;
 use cursive::view::Nameable;
 use cursive::view::Scrollable;
@@ -15,6 +22,8 @@ use cursive_table_view::{TableView, TableViewItem};
 // walkdir = "2" is a potential crate to traverse directories
 
 #[derive(Debug)]
+
+// code for Tree view
 struct TreeEntry {
     name: String,
     dir: Option<PathBuf>,
@@ -26,6 +35,57 @@ impl fmt::Display for TreeEntry {
     }
 
 }
+// end tree view
+// code for table view
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+enum BasicColumn {
+    Name,
+    Count,
+    Rate,
+}
+
+impl BasicColumn {
+    fn as_str(&self) -> &str {
+        match *self {
+            BasicColumn::Name => "Name",
+            BasicColumn::Count => "Count",
+            BasicColumn::Rate => "Rate",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+struct Foo {
+    name: String,
+    count: usize,
+    rate: usize,
+}
+
+impl TableViewItem<BasicColumn> for Foo {
+    fn to_column(&self, column: BasicColumn) -> String {
+        match column {
+            BasicColumn::Name => self.name.to_string(),
+            BasicColumn::Count => format!("{}", self.count),
+            BasicColumn::Rate => format!("{}", self.rate), 
+        }
+    }
+
+    fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering
+    where
+        Self: Sized,
+    {
+        match column {
+            BasicColumn::Name => self.name.cmp(&other.name),
+            BasicColumn::Count => self.count.cmp(&other.count),
+            BasicColumn::Rate => self.rate.cmp(&other.rate),
+        }
+    }
+}
+
+
+
+//end table view
+
 
 fn main() {
 
@@ -155,3 +215,8 @@ fn expand_tree(tree: &mut TreeView<TreeEntry>, parent_row: usize, dir: &PathBuf)
 fn get_current_dir() -> PathBuf {
     env::current_dir().unwrap()
 }
+
+// add logic for table view
+
+
+
