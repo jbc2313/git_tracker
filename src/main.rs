@@ -8,6 +8,7 @@ use std::path::PathBuf;
 use rand::Rng;
 use cursive::views::TextView;
 use cursive::traits::*;
+use cursive::align::HAlign;
 
 
 
@@ -84,7 +85,7 @@ impl TableViewItem<BasicColumn> for Foo {
 
 
 
-//end table view
+//end table view setup
 
 
 fn main() {
@@ -111,7 +112,8 @@ fn sec_view(s: &mut Cursive) {
     s.add_layer(Dialog::text("Do you want to track all your git repos?")
         .title("Track repos?")
         .button("Yes!", track_view)
-        .button("Not Now.", |s| quit_view(s, "Are you sure you want to quit?")));
+        .button("Not Now.", |s| quit_view(s, "Are you sure you want to quit?"))
+        .button("View Table.", table_view));
 }
 
 // fn track_view(s: &mut Cursive) {
@@ -217,6 +219,60 @@ fn get_current_dir() -> PathBuf {
 }
 
 // add logic for table view
+fn table_view(s: &mut Cursive) {
+   let mut rng = rand::thread_rng();
+   let mut table = TableView::<Foo, BasicColumn>::new()
+       .column(BasicColumn::Name, "Name", |c| c.width_percent(20))
+        .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+        .column(BasicColumn::Rate, "Rate", |c| {
+            c.ordering(Ordering::Greater)
+                .align(HAlign::Right)
+                .width_percent(20)
+        });
 
+   let mut items = Vec::new();
+    for i in 0..50 {
+        items.push(Foo {
+            name: format!("Name {}", i),
+            count: rng.gen_range(0..=255),
+            rate: rng.gen_range(0..=255),
+        });
+    }
+
+    table.set_items(items);
+
+    table.set_on_sort(|siv: &mut Cursive, column: BasicColumn, order: Ordering| {
+        siv.add_layer(
+            Dialog::around(TextView::new(format!("{} / {:?}", column.as_str(), order)))
+                .title("Sorted by")
+                .button("Close", |s| {
+                    s.pop_layer();
+                }),
+        );
+    });
+
+    table.set_on_submit(|siv: &mut Cursive, row: usize, index: usize| {
+        let value = siv
+            .call_on_name("table", move |table: &mut TableView<Foo, BasicColumn>| {
+                format!("{:?}", table.borrow_item(index).unwrap())
+            })
+            .unwrap();
+
+            siv.add_layer(
+            Dialog::around(TextView::new(value))
+                .title(format!("Removing row # {}", row))
+                .button("Close", move |s| {
+                    s.call_on_name("table", |table: &mut TableView<Foo, BasicColumn>| {
+                        table.remove_item(index);
+                    });
+                    s.pop_layer();
+                }),
+        );
+    });
+
+    s.add_layer(Dialog::around(table.with_name("table").min_size((50, 20))).title("Table View"));
+
+
+}
 
 
