@@ -25,12 +25,12 @@ use cursive_table_view::{TableView, TableViewItem};
 #[derive(Debug)]
 struct Repo {
     name: String,
-    dir: Option<PathBuf>,
+    dir: PathBuf,
 }
 
 impl fmt::Display for Repo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.name)
+        write!(f, "{}, {}", self.name, self.dir.as_path().display().to_string())
     }
 }
 //end my code
