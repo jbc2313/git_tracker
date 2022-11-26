@@ -275,4 +275,5 @@ fn table_view(s: &mut Cursive) {
 
 }
 
-
+// need to create a new function similar to collect_entries
+// the fn will create an iterable list of the entries for the table view
