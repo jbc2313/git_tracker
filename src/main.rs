@@ -10,6 +10,7 @@ use cursive::view::Nameable;
 use cursive::view::Scrollable;
 use cursive::views::Dialog;
 use cursive_tree_view::{Placement, TreeView};
+use cursive_table_view::{TableView, TableViewItem};
 
 // walkdir = "2" is a potential crate to traverse directories
 
