@@ -21,10 +21,21 @@ use cursive_tree_view::{Placement, TreeView};
 use cursive_table_view::{TableView, TableViewItem};
 
 // walkdir = "2" is a potential crate to traverse directories
-
+// code I made for git repo
 #[derive(Debug)]
+struct Repo {
+    name: String,
+    dir: Option<PathBuf>,
+}
 
+impl fmt::Display for Repo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.name)
+    }
+}
+//end my code
 // code for Tree view
+#[derive(Debug)]
 struct TreeEntry {
     name: String,
     dir: Option<PathBuf>,
@@ -41,7 +52,7 @@ impl fmt::Display for TreeEntry {
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 enum BasicColumn {
     Name,
-    Count,
+    Dir,
     Rate,
 }
 
@@ -49,7 +60,7 @@ impl BasicColumn {
     fn as_str(&self) -> &str {
         match *self {
             BasicColumn::Name => "Name",
-            BasicColumn::Count => "Count",
+            BasicColumn::Dir => "Dir",
             BasicColumn::Rate => "Rate",
         }
     }
@@ -58,7 +69,7 @@ impl BasicColumn {
 #[derive(Clone, Debug)]
 struct Foo {
     name: String,
-    count: usize,
+    dir: String,
     rate: usize,
 }
 
@@ -66,7 +77,7 @@ impl TableViewItem<BasicColumn> for Foo {
     fn to_column(&self, column: BasicColumn) -> String {
         match column {
             BasicColumn::Name => self.name.to_string(),
-            BasicColumn::Count => format!("{}", self.count),
+            BasicColumn::Dir => self.dir.to_string(),
             BasicColumn::Rate => format!("{}", self.rate), 
         }
     }
@@ -77,7 +88,7 @@ impl TableViewItem<BasicColumn> for Foo {
     {
         match column {
             BasicColumn::Name => self.name.cmp(&other.name),
-            BasicColumn::Count => self.count.cmp(&other.count),
+            BasicColumn::Dir => self.dir.cmp(&other.dir),
             BasicColumn::Rate => self.rate.cmp(&other.rate),
         }
     }
@@ -221,9 +232,12 @@ fn get_current_dir() -> PathBuf {
 // add logic for table view
 fn table_view(s: &mut Cursive) {
    let mut rng = rand::thread_rng();
+   let dir = env::current_dir().unwrap();
+   let mut repos = Vec::new();
+        get_repos(&dir, &mut repos).ok();
    let mut table = TableView::<Foo, BasicColumn>::new()
        .column(BasicColumn::Name, "Name", |c| c.width_percent(20))
-        .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+        .column(BasicColumn::Dir, "Dir", |c| c.align(HAlign::Center))
         .column(BasicColumn::Rate, "Rate", |c| {
             c.ordering(Ordering::Greater)
                 .align(HAlign::Right)
@@ -231,10 +245,11 @@ fn table_view(s: &mut Cursive) {
         });
 
    let mut items = Vec::new();
-    for i in 0..50 {
+   let iter_repos = repos.iter();
+    for val in iter_repos {
         items.push(Foo {
-            name: format!("Name {}", i),
-            count: rng.gen_range(0..=255),
+            name: format!("Name {}", val),
+            dir: format!("Dir {}", val),
             rate: rng.gen_range(0..=255),
         });
     }
@@ -277,3 +292,33 @@ fn table_view(s: &mut Cursive) {
 
 // need to create a new function similar to collect_entries
 // the fn will create an iterable list of the entries for the table view
+//
+
+
+fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
+    if dir.is_dir() {
+            for entry in fs::read_dir(dir)? {
+                let entry = entry?;
+                let path = entry.path();
+
+                if path.is_dir() {
+                    repos.push(Repo {
+                        name: entry
+                            .file_name()
+                            .into_string()
+                            .unwrap_or_else(|_| "".to_string()),
+                        dir: Some(path),
+                    });
+                } else if path.is_file() {
+                    repos.push(Repo {
+                        name: entry
+                            .file_name()
+                            .into_string()
+                            .unwrap_or_else(|_| "".to_string()),
+                        dir: None,
+                    });
+                }
+            }
+        }
+        Ok(())
+}
