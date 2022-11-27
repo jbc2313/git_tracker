@@ -25,12 +25,12 @@ use cursive_table_view::{TableView, TableViewItem};
 #[derive(Debug)]
 struct Repo {
     name: String,
-    dir: PathBuf,
+    dir: Option<String>,
 }
 
 impl fmt::Display for Repo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}, {}", self.name, self.dir.as_path().display().to_string())
+        write!(f, "{}", self.name)
     }
 }
 //end my code
@@ -245,11 +245,11 @@ fn table_view(s: &mut Cursive) {
         });
 
    let mut items = Vec::new();
-   let iter_repos = repos.iter();
-    for val in iter_repos {
+   let iter_repos = repos.iter_mut();
+    for entry in iter_repos {
         items.push(Foo {
-            name: format!("Name {}", val),
-            dir: format!("Dir {}", val),
+            name: format!("Name {}", entry.name),
+            dir: format!("Dir {}", entry.dir.as_ref().unwrap_or(&"NONE".to_owned())),
             rate: rng.gen_range(0..=255),
         });
     }
@@ -307,7 +307,7 @@ fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
                             .file_name()
                             .into_string()
                             .unwrap_or_else(|_| "".to_string()),
-                        dir: Some(path),
+                        dir: Some(path.as_path().display().to_string()),
                     });
                 } else if path.is_file() {
                     repos.push(Repo {
