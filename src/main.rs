@@ -302,6 +302,13 @@ fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
                 let path = entry.path();
 
                 if path.is_dir() {
+                    match path.to_str().unwrap() {
+                        stringify!(".git") => repos.push(Repo {
+                            name: String::from("GIT REPO"),
+                            dir: Some(path.as_path().display().to_string()),
+                        }),
+                        &_ => println!("error")
+                    }
                     repos.push(Repo {
                         name: entry
                             .file_name()
