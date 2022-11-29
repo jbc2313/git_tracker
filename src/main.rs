@@ -305,9 +305,9 @@ fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
 
                 if path.is_dir() {
                     match path.file_stem() {
-                       Some(path) if path == Path::new(".git") => repos.push(Repo {
+                       Some(p) if p == Path::new(".git") => repos.push(Repo {
                             name: String::from("GIT REPO"),
-                            dir: Some(path.to_string_lossy().to_string()),
+                            dir: Some(path.as_path().display().to_string()),
                         }),
                         _ => repos.push(Repo {
                             name: String::from("NOT GIT"),
