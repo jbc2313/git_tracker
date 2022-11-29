@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
 use std::env;
-use std::ffi::OsStr;
 use std::fmt;
 use std::fs;
 use std::io;
