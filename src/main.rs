@@ -1,9 +1,11 @@
 use std::cmp::Ordering;
 use std::env;
+use std::ffi::OsStr;
 use std::fmt;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
+use std::path::Path;
 //table view imports
 use rand::Rng;
 use cursive::views::TextView;
@@ -302,20 +304,23 @@ fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
                 let path = entry.path();
 
                 if path.is_dir() {
-                    match path.to_str().unwrap() {
-                        stringify!(".git") => repos.push(Repo {
+                    match path.file_stem() {
+                       Some(path) if path == Path::new(".git") => repos.push(Repo {
                             name: String::from("GIT REPO"),
-                            dir: Some(path.as_path().display().to_string()),
+                            dir: Some(path.to_string_lossy().to_string()),
                         }),
-                        &_ => println!("error")
+                        _ => repos.push(Repo {
+                            name: String::from("NOT GIT"),
+                            dir: Some(path.as_path().display().to_string()),
+                        })
                     }
-                    repos.push(Repo {
-                        name: entry
-                            .file_name()
-                            .into_string()
-                            .unwrap_or_else(|_| "".to_string()),
-                        dir: Some(path.as_path().display().to_string()),
-                    });
+                    // repos.push(Repo {
+                    //     name: entry
+                    //         .file_name()
+                    //         .into_string()
+                    //         .unwrap_or_else(|_| "".to_string()),
+                    //     dir: Some(path.as_path().display().to_string()),
+                    // });
                 } else if path.is_file() {
                     repos.push(Repo {
                         name: entry
