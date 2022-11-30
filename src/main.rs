@@ -293,8 +293,6 @@ fn table_view(s: &mut Cursive) {
 
 // need to create a new function similar to collect_entries
 // the fn will create an iterable list of the entries for the table view
-//
-
 
 fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
     if dir.is_dir() {
