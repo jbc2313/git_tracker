@@ -307,7 +307,7 @@ fn get_repos(dir: &PathBuf, repos: &mut Vec<Repo>) -> io::Result<()> {
                             dir: Some(path.as_path().display().to_string()),
                         }),
                         _ => repos.push(Repo {
-                            name: String::from("NOT GIT"),
+                            name: entry.file_name().into_string().unwrap_or_else(|_| "".to_string()),
                             dir: Some(path.as_path().display().to_string()),
                         })
                     }
