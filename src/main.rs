@@ -109,7 +109,7 @@ fn main() {
     let dir: PathBuf = get_current_dir();
 
 
-    prg.add_layer(Dialog::text("Git Tracker")
+    prg.add_layer(Dialog::text("Git Repo Tracker")
         .title(dir.as_path().display().to_string())
         .button("Next", sec_view));
 
