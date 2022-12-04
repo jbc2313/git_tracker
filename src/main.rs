@@ -250,7 +250,7 @@ fn table_view(s: &mut Cursive) {
     for entry in iter_repos {
         items.push(Foo {
             name: format!("Name {}", entry.name),
-            dir: format!("Dir {}", entry.dir.as_ref().unwrap_or(&"NONE".to_owned())),
+            dir: format!("Dir {}", entry.dir.as_ref().unwrap_or(&"file not DIR".to_owned())),
             rate: rng.gen_range(0..=10),
         });
     }
