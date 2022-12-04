@@ -251,7 +251,7 @@ fn table_view(s: &mut Cursive) {
         items.push(Foo {
             name: format!("Name {}", entry.name),
             dir: format!("Dir {}", entry.dir.as_ref().unwrap_or(&"NONE".to_owned())),
-            rate: rng.gen_range(0..=255),
+            rate: rng.gen_range(0..=10),
         });
     }
 
